@@ -24,9 +24,19 @@ public class HtmlRead {
                     new InputStreamReader(urlc.getInputStream())
             );
             String line;
-            while ( (line = reader.readLine()) != null ) {
-                
-                System.out.println(line);
+            while ((line = reader.readLine()) != null) {
+                //only look at lines that contain href=
+                if (line.contains("href=")) {
+                    int start = line.indexOf("href=") + 6; //skip href="
+                    int end = line.indexOf("\"", start);   //find closing quote
+                    if (end > start) {
+                        String link = line.substring(start, end);
+                        //print only links that have "milton.edu" or start with "/"
+                        if (link.contains("milton.edu") || link.startsWith("/")) {
+                            System.out.println(link);
+                        }
+                    }
+                }
             }
             reader.close();
         } catch(Exception ex) {
