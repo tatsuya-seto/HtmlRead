@@ -25,19 +25,22 @@ public class HtmlRead {
             );
             String line;
             while ((line = reader.readLine()) != null) {
-                //only look at lines that contain href=
                 if (line.contains("href=")) {
-                    int start = line.indexOf("href=") + 6; //skip href="
-                    int end = line.indexOf("\"", start);   //find closing quote
-                    if (end > start) {
-                        String link = line.substring(start, end);
-                        //print only links that have "milton.edu" or start with "/"
-                        if (link.contains("milton.edu") || link.startsWith("/")) {
-                            System.out.println(link);
+                    int start = line.indexOf("href=") + 5;
+                    char quote = line.charAt(start);
+                    if (quote == '"' || quote == '\'') {
+                        int end = line.indexOf(quote, start + 1);
+                        if (end != -1) {
+                            String link = line.substring(start + 1, end);
+                            if (link.contains("milton.edu") || link.startsWith("/")) {
+                                System.out.println(link);
+                            }
                         }
                     }
                 }
-            }
+
+                }
+
             reader.close();
         } catch(Exception ex) {
             System.out.println(ex);
