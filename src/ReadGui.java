@@ -5,6 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class ReadGui implements ActionListener {
     private JFrame mainFrame;
@@ -17,7 +21,7 @@ public class ReadGui implements ActionListener {
     private JLabel Label7;
     private JLabel Label8;
     private JLabel Label9;
-    private JLabel Label10;
+    private JTextArea outputArea;
     private JPanel BottomPanel;
     private JPanel TopPanel;
     private JPanel LongPanel;
@@ -28,10 +32,10 @@ public class ReadGui implements ActionListener {
     private JMenuBar mb;
     private JMenu file, edit, help;
     private JMenuItem cut, copy, paste, selectAll;
-    private JTextArea ta; //typing area
-    private JTextArea Link; //typing area
-    private int WIDTH=800;
-    private int HEIGHT=700;
+    private JTextField ta; //typing area
+    private JTextField Link; //typing area
+    private int WIDTH = 800;
+    private int HEIGHT = 700;
 
 
     public ReadGui() {
@@ -58,12 +62,12 @@ public class ReadGui implements ActionListener {
         paste.addActionListener(this);
         selectAll.addActionListener(this);
 
-        Link = new JTextArea();
-        Link.setBounds(500, 1, WIDTH-100, 1);
+        Link = new JTextField();
+        Link.setBounds(500, 1, WIDTH - 100, 1);
 
-        ta = new JTextArea();
-        ta.setBounds(50, 1, WIDTH-100, 1);
-        ta.setSize(1,1);
+        ta = new JTextField();
+        ta.setBounds(50, 1, WIDTH - 100, 1);
+        ta.setSize(1, 1);
 
 
         mb = new JMenuBar();
@@ -91,13 +95,13 @@ public class ReadGui implements ActionListener {
         Label4 = new JLabel("", JLabel.CENTER);
         Label4.setSize(350, 100);
 
-        Label5 = new JLabel("       Search:", JLabel.RIGHT);
+        Label5 = new JLabel("       Search Word:", JLabel.RIGHT);
         Label5.setSize(350, 100);
 
         Label6 = new JLabel("Top 0", JLabel.CENTER);
         Label6.setSize(350, 100);
 
-        Label7 = new JLabel("Top 0", JLabel.CENTER);
+        Label7 = new JLabel("           ", JLabel.CENTER);
         Label7.setSize(350, 100);
 
         Label8 = new JLabel("Top 0", JLabel.CENTER);
@@ -106,8 +110,13 @@ public class ReadGui implements ActionListener {
         Label9 = new JLabel("Top 0", JLabel.CENTER);
         Label9.setSize(350, 100);
 
-        Label10 = new JLabel("TopRight", JLabel.CENTER);
-        Label10.setSize(350, 100);
+        outputArea = new JTextArea("Insert a link and search term to get the links you need!");
+        outputArea.setEditable(false);
+        outputArea.setLineWrap(true);
+        outputArea.setWrapStyleWord(true);
+
+        JScrollPane scroll = new JScrollPane(outputArea);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
@@ -121,11 +130,11 @@ public class ReadGui implements ActionListener {
             }
         });
         BottomPanel = new JPanel();
-        BottomPanel.setLayout(new GridLayout(4,1));
+        BottomPanel.setLayout(new GridLayout(4, 1));
         BottomPanel.setVisible(true);
 
         TopPanel = new JPanel();
-        TopPanel.setLayout(new GridLayout(1,1));
+        TopPanel.setLayout(new GridLayout(1, 1));
         TopPanel.setVisible(true);
 
         LongPanel = new JPanel();
@@ -141,7 +150,7 @@ public class ReadGui implements ActionListener {
         FillerPanel.setVisible(true);
 
         SearchPanel = new JPanel();
-        SearchPanel.setLayout(new GridLayout(1,4));
+        SearchPanel.setLayout(new GridLayout(1, 4));
         SearchPanel.setVisible(true);
 
         GoPanel = new JPanel();
@@ -154,7 +163,7 @@ public class ReadGui implements ActionListener {
     private void showEventDemo() {
 
         JButton goButton = new JButton("Go");
-        goButton.setSize(20,1);
+        goButton.setSize(20, 1);
         JButton secondButton = new JButton("2");
         JButton thirdButton = new JButton("3");
         JButton fourthButton = new JButton("4");
@@ -165,36 +174,29 @@ public class ReadGui implements ActionListener {
         JButton ninthButton = new JButton("1");
         JButton tenthButton = new JButton("button 10");
 
-        goButton.setActionCommand("Go");
-        secondButton.setActionCommand("Submit");
-        thirdButton.setActionCommand("Cancel");
+        goButton.setActionCommand("go");
 
         goButton.addActionListener(new ButtonClickListener());
-        secondButton.addActionListener(new ButtonClickListener());
-        thirdButton.addActionListener(new ButtonClickListener());
 
         mainFrame.add(TopPanel, BorderLayout.CENTER);
-        mainFrame.add(BottomPanel,BorderLayout.SOUTH);
+        mainFrame.add(BottomPanel, BorderLayout.SOUTH);
 
         BottomPanel.add(LongPanel);
         BottomPanel.add(MidPanel);
         BottomPanel.add(SearchPanel);
         BottomPanel.add(SearchPanel);
 
-        TopPanel.add(ta);
+        TopPanel.add(new JScrollPane(outputArea));
 
-        LongPanel.add(Label2,BorderLayout.WEST);
-        LongPanel.add(Link,BorderLayout.CENTER);
-        LongPanel.add(Label1,BorderLayout.EAST);
+        LongPanel.add(Label2, BorderLayout.WEST);
+        LongPanel.add(Link, BorderLayout.CENTER);
+        LongPanel.add(Label1, BorderLayout.EAST);
         SearchPanel.add(Label5);
         SearchPanel.add(ta);
         SearchPanel.add(GoPanel);
-        GoPanel.add(Label3,BorderLayout.WEST);
-        GoPanel.add(goButton,BorderLayout.CENTER);
+        GoPanel.add(Label3, BorderLayout.WEST);
+        GoPanel.add(goButton, BorderLayout.CENTER);
         SearchPanel.add(Label7);
-
-
-
 
 
         mainFrame.setVisible(true);
@@ -202,20 +204,65 @@ public class ReadGui implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == cut)
-            ta.cut();
-        if (e.getSource() == paste)
-            ta.paste();
-        if (e.getSource() == copy)
-            ta.copy();
-        if (e.getSource() == selectAll)
-            ta.selectAll();
+
     }
 
-    private class ButtonClickListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            String command = e.getActionCommand();
 
+
+        private class ButtonClickListener implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
+                String command = e.getActionCommand();
+                if (command.equals("go")) {
+                    String urlText = Link.getText().trim();
+                    String searchword = ta.getText().trim();
+                    //Getting url and searchword texts
+
+                    if (urlText.isEmpty() || searchword.isEmpty()) {
+                        outputArea.setText("Please enter both a link and a search word");
+                        return;
+                    }//Text returns this error if both a search term and a link is not inserted
+
+                    String allLinks = "";
+                    try {
+                        URL url = new URL(urlText);
+
+                        URLConnection urlc = url.openConnection();
+                        urlc.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; " + "Windows NT 5.1; en-US; rv:1.8.0.11) ");
+
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(urlc.getInputStream())
+                        );
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            if (line.contains("href=")) {
+                                int start = line.indexOf("href=") + 5;
+                                char quote = line.charAt(start);
+                                if (quote == '"' || quote == '\'') {
+                                    int end = line.indexOf(quote, start + 1);
+                                    if (end != -1) {
+                                        String link = line.substring(start + 1, end);
+                                        if (link.contains(searchword)) {
+                                            allLinks += link + "\n";
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+
+                        reader.close();
+                    } catch (Exception ex) {
+                        allLinks = "Error: " + ex.getMessage();
+                    }
+
+                    if (allLinks.isEmpty()) {
+                        allLinks = "No links found containing \"" + searchword + "\"";
+                    }
+
+                    outputArea.setText(allLinks);
+
+            }
         }
     }
 }
