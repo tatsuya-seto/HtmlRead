@@ -74,6 +74,7 @@ public class ReadGui implements ActionListener {
         outputArea = new JEditorPane();
         outputArea.setText("Insert a link and search term to get the links you need!");
         outputArea.setEditable(false);
+        outputArea.setContentType("text/html");
         outputArea.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try { Desktop.getDesktop().browse(e.getURL().toURI()); } catch (Exception ex) { ex.printStackTrace(); }
@@ -194,7 +195,6 @@ public class ReadGui implements ActionListener {
                                     int end = line.indexOf(quote, start + 1);
                                     if (end != -1) {
                                         String link = line.substring(start + 1, end);
-                                        link = link.trim();
                                         if (link.contains(searchword)) {
                                             allLinks += link + "\n";
                                         }
@@ -210,8 +210,26 @@ public class ReadGui implements ActionListener {
 
                     if (allLinks.isEmpty()) {
                         allLinks = "No links found containing \"" + searchword + "\"";
+                    }   else {
+                        //build HTML with clickable links
+                        StringBuilder html = new StringBuilder("<html><body>");
+                        String[] lines = allLinks.split("\\R");   // split on newlines
+
+                        for (String link : lines) {
+                            link = link.trim();
+                            if (link.isEmpty()) continue;
+
+                            html.append("<a href=\"")
+                                    .append(link)
+                                    .append("\">")
+                                    .append(link)
+                                    .append("</a><br>");
+                        }
+
+                        html.append("</body></html>");
+
+                        outputArea.setText(html.toString());
                     }
-                    outputArea.setText(allLinks);
 
             }
         }
