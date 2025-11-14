@@ -194,6 +194,7 @@ public class ReadGui implements ActionListener {
                                     int end = line.indexOf(quote, start + 1);
                                     if (end != -1) {
                                         String link = line.substring(start + 1, end);
+                                        link = link.trim();
                                         if (link.contains(searchword)) {
                                             allLinks += link + "\n";
                                         }
