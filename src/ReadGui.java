@@ -199,20 +199,21 @@ public class ReadGui implements ActionListener {
                                 new InputStreamReader(urlc.getInputStream())
                         ); //reading
                         String line;
-                        while ((line = reader.readLine()) != null) { //reading line by line
-                            if (line.contains("href=")) { //checks for hyperlink tag
-                                int start = line.indexOf("href=") + 5; //finds start of link ("href=" is 5 characters so +5)
-                                char quote = line.charAt(start); //detects quote type used
-                                if (quote == '"' || quote == '\'') { //defaults to double quote
-                                    int end = line.indexOf(quote, start + 1); //finds end of link
-                                    if (end != -1) {
-                                        String link = line.substring(start + 1, end);
-                                        if (link.contains(searchword)) { //does link contain search term?
-                                            allLinks += link + "\n";//adding to results
+                        while ((line = reader.readLine()) != null) {//reading line by line
+                            int pos = 0; //start position for searching within the line
+                            while ((pos = line.indexOf("href=", pos)) != -1) { //find EACh occurance of href
+                                int start = pos + 5; //moving past href= (5 chars so +5)
+                                char quote = line.charAt(start); //Getting the quote char type
+                                if (quote == '"' || quote == '\'') {
+                                    int end = line.indexOf(quote, start + 1); //Finding closing quote
+                                    if (end != -1) { //when closing quote found
+                                        String link = line.substring(start + 1, end); //extract quote
+                                        if (link.contains(searchword)) { //checking if it has search term
+                                            allLinks += link + "\n"; //adding to results
                                         }
-
-                                    }
-                                }
+                                        pos = end + 1; // continue searching rest of line
+                                    } else break; //stop if no closing quote
+                                } else break; //stop if no other href
                             }
                         }
                         reader.close();
